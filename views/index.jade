@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  table
+    tbody
+      - for (var i = 0; i < rows; ++i) {
+        tr
+          - for (var j = 0; j < columns; ++j) {
+            - if(i==position[0] && j==position[1]) {
+              td(width='1', ondrop="drop(event)", ondragover="allowDrop(event)", ondragenter="highlight(event)", ondragleave="unhighlight(event)", draggable='false', id='#{i}-#{j}')
+                #element(draggable="true", ondragstart="startdrag(event)", ondragend="stopdrag(event)", ondragover="sendevent(event)")
+                  img(src='/images/doge.jpeg')
+            - } else {
+              td( ondrop="drop(event)", ondragover="allowDrop(event)", ondragenter="highlight(event)", ondragleave="unhighlight(event)", draggable='false', id='#{i}-#{j}')
+            - }
+          - }
+      - }
