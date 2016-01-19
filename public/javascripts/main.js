@@ -5,18 +5,29 @@ socket.on('coordinates', function(msg) {
   if (IS_BEING_DRAGGED)
     return;
   console.log(msg);
+  var element_cell = document.getElementById(msg);
+  element_cell.appendChild(element);
 });
 socket.on('start', function(msg) {
   if (IS_BEING_DRAGGED)
     return;
+  console.log('foreign start')
   IS_BEING_DRAGGED_FOREIGN = true;
+  var element = document.getElementById('element');
+  element.className = 'foreign-drag'
   console.log(msg);
 });
 socket.on('stop', function(msg) {
   if (IS_BEING_DRAGGED)
     return;
+  console.log('foreign stop')
   IS_BEING_DRAGGED_FOREIGN = false;
+  var element = document.getElementById('element');
+  element.className = ''
   console.log(msg);
+
+  var element_cell = document.getElementById(msg);
+  element_cell.appendChild(element);
 });
 function allowDrop(ev) {
   ev.preventDefault();
@@ -30,7 +41,7 @@ function startdrag(ev) {
 }
 function stopdrag(ev) {
   IS_BEING_DRAGGED = false;
-  socket.emit('stop',true);
+  socket.emit('stop',ev.target.parentNode.id);
   // console.log('stop');
   console.log(ev);
 }

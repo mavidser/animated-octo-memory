@@ -45,3 +45,7 @@ td {
   background: #C6CBF2;
   /*border: 1px solid #222;*/
 }
+.foreign-drag {
+  opacity: 0.5;
+  background: #B9BCF5;
+}

@@ -9,7 +9,7 @@ block content
             - if(i==position[0] && j==position[1]) {
               td(width='1', ondrop="drop(event)", ondragover="allowDrop(event)", ondragenter="highlight(event)", ondragleave="unhighlight(event)", draggable='false', id='#{i}-#{j}')
                 #element(draggable="true", ondragstart="startdrag(event)", ondragend="stopdrag(event)", ondragover="sendevent(event)")
-                  img(src='/images/doge.jpeg')
+                  img(src='/images/doge.jpeg', draggable='false')
             - } else {
               td( ondrop="drop(event)", ondragover="allowDrop(event)", ondragenter="highlight(event)", ondragleave="unhighlight(event)", draggable='false', id='#{i}-#{j}')
             - }

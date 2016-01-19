@@ -38,9 +38,14 @@ io.on('connection', function(socket){
     console.log(msg);
     io.emit('coordinates', msg);
   });
-
-
-
+  socket.on('start', function(msg){
+    console.log(msg);
+    io.emit('start', msg);
+  });
+  socket.on('stop', function(msg){
+    console.log(msg);
+    io.emit('stop', msg);
+  });
 });
 
 http.listen(3000, function(){
