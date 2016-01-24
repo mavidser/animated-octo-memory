@@ -11,6 +11,7 @@ socket.on('initiate-response', function(msg) {
   var element_cell = document.getElementById(position);
   element_cell.appendChild(element);
   if (IS_BEING_DRAGGED_FOREIGN) {
+    element.draggable = false;
     element.className = 'foreign-drag';
   }
 });
@@ -90,4 +91,12 @@ function sendevent (ev) {
   if (!IS_BEING_DRAGGED)
     return
   // console.log(ev);
+}
+var dragItems = document.querySelectorAll('[draggable=true]');
+
+for (var i = 0; i < dragItems.length; i++) {
+  addEvent(dragItems[i], 'dragstart', function (event) {
+    // store the ID of the element, and collect it on the drop later on
+    event.dataTransfer.setData('Text', this.id);
+  });
 }

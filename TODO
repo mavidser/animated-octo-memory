@@ -6,6 +6,7 @@ TODO
 [x] Lazy Load. Ie. don't get initial position from jade, but from JS.
 [x] Handle opening page mid-drag.
 [x] Save position on persistent storage.
+[x] Server-side check. If lag, don't take two dragging inputs.
 [ ] Show (scaled) dragging of ghost image.
 [ ] Dropping image on itself creates problems.
-[ ] Server-side check. If lag, don't take two dragging inputs.
+[ ] Firefox

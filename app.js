@@ -7,7 +7,8 @@ var app = express();
 var http = require('http').Server(app);
 
 var io = require('socket.io')(http);
-var CURRENT_POSITION = '0-0'
+var CURRENT_POSITION = '0-0';
+var CURRENT_DRAGGER = null;
 try {
   CURRENT_POSITION = fs.readFileSync('LAST_POS').toString();
 } catch(e) {}
@@ -38,7 +39,7 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+  console.log('a user connected',socket.id);
 
   socket.on('initiate', function (msg) {
     socket.emit('initiate-response', {
@@ -48,6 +49,8 @@ io.on('connection', function(socket){
   })
 
   socket.on('coordinates', function(msg){
+    if (socket.id != CURRENT_DRAGGER)
+      return;
     console.log(msg);
     CURRENT_POSITION = msg;
     io.emit('coordinates', msg);
@@ -57,6 +60,7 @@ io.on('connection', function(socket){
     console.log(msg);
     io.emit('start', msg);
     IS_BEING_DRAGGED_FOREIGN = true;
+    CURRENT_DRAGGER = socket.id;
   });
   socket.on('stop', function(msg){
     console.log(msg);
