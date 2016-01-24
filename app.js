@@ -1,11 +1,17 @@
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
+var fs = require('fs');
 
 var app = express();
 var http = require('http').Server(app);
 
 var io = require('socket.io')(http);
+var CURRENT_POSITION = '0-0'
+try {
+  CURRENT_POSITION = fs.readFileSync('LAST_POS').toString();
+} catch(e) {}
+var IS_BEING_DRAGGED_FOREIGN = false;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,24 +33,36 @@ app.get('/', function(req, res){
   res.render('index', {
     rows: 10,
     columns: 10,
-    position: [0,0]
+    position: CURRENT_POSITION.split('-')
   });
 });
 
 io.on('connection', function(socket){
   console.log('a user connected');
 
+  socket.on('initiate', function (msg) {
+    socket.emit('initiate-response', {
+      IS_BEING_DRAGGED_FOREIGN:IS_BEING_DRAGGED_FOREIGN,
+      position:CURRENT_POSITION
+    });
+  })
+
   socket.on('coordinates', function(msg){
     console.log(msg);
+    CURRENT_POSITION = msg;
     io.emit('coordinates', msg);
+    fs.writeFileSync("LAST_POS", msg);
   });
   socket.on('start', function(msg){
     console.log(msg);
     io.emit('start', msg);
+    IS_BEING_DRAGGED_FOREIGN = true;
   });
   socket.on('stop', function(msg){
     console.log(msg);
+    CURRENT_POSITION = msg;
     io.emit('stop', msg);
+    IS_BEING_DRAGGED_FOREIGN = false;
   });
 });
 
