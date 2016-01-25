@@ -68,6 +68,10 @@ io.on('connection', function(socket){
     io.emit('stop', msg);
     IS_BEING_DRAGGED_FOREIGN = false;
   });
+  socket.on('ghost', function(msg) {
+    // console.log(msg);
+    io.emit('ghost',msg);
+  });
 });
 
 http.listen(3000, function(){

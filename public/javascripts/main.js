@@ -1,12 +1,12 @@
 var IS_BEING_DRAGGED = false;
 var IS_BEING_DRAGGED_FOREIGN = false;
 var socket = io();
+var offsetX = 0, offsetY =0;
 
 
 socket.on('initiate-response', function(msg) {
   IS_BEING_DRAGGED_FOREIGN = msg.IS_BEING_DRAGGED_FOREIGN;
   var position = msg.position;
-  console.log('pos',position)
   var element = document.getElementById('element');
   var element_cell = document.getElementById(position);
   element_cell.appendChild(element);
@@ -20,7 +20,6 @@ socket.emit('initiate', true);
 socket.on('coordinates', function(msg) {
   if (IS_BEING_DRAGGED)
     return;
-  console.log(msg);
   var element_cell = document.getElementById(msg);
   element_cell.appendChild(element);
 });
@@ -46,16 +45,52 @@ socket.on('stop', function(msg) {
 
   var element_cell = document.getElementById(msg);
   element_cell.appendChild(element);
+  element.style.position = 'initial';
+  element.style.left = '';
+  element.style.top = '';
+  element.style.width = '';
+});
+
+socket.on('ghost', function(msg) {
+  if (IS_BEING_DRAGGED)
+    return;
+
+  var scrwidth = window.innerWidth
+  || document.documentElement.clientWidth
+  || document.body.clientWidth;
+
+  var scrheight = window.innerHeight
+  || document.documentElement.clientHeight
+  || document.body.clientHeight;
+  console.log(msg)
+  var element = document.getElementById('element');
+  width = element.offsetWidth;
+  element.style.position = 'absolute';
+  element.style.left = msg[0]*scrwidth+'px';
+  element.style.top = msg[1]*scrheight+'px';
+  element.style.width = width+'px';
 });
 
 function allowDrop(ev) {
+  var width = window.innerWidth
+  || document.documentElement.clientWidth
+  || document.body.clientWidth;
+
+  var height = window.innerHeight
+  || document.documentElement.clientHeight
+  || document.body.clientHeight;
+
+  var w = ev.clientX - offsetX;
+  var h = ev.clientY - offsetY;
+  socket.emit('ghost',[w/width,h/height]);
   ev.preventDefault();
 }
 function startdrag(ev) {
   IS_BEING_DRAGGED = true;
   socket.emit('start',true);
   // console.log('start');
-  console.log(ev);
+  offsetX = ev.offsetX;
+  offsetY = ev.offsetY;
   // ev.dataTransfer.setData("text", ev.target.id);
 }
 function stopdrag(ev) {
@@ -80,7 +115,8 @@ function highlight (ev) {
   ev.preventDefault();
   ev.target.className = 'highlight'
   // console.log('sending');
-  socket.emit('coordinates',ev.target.id)
+  if (ev.target.id != 'element')
+    socket.emit('coordinates',ev.target.id)
 }
 function unhighlight (ev) {
   if (!IS_BEING_DRAGGED)
@@ -90,13 +126,4 @@ function unhighlight (ev) {
 function sendevent (ev) {
   if (!IS_BEING_DRAGGED)
     return
-  // console.log(ev);
-}
-var dragItems = document.querySelectorAll('[draggable=true]');
-
-for (var i = 0; i < dragItems.length; i++) {
-  addEvent(dragItems[i], 'dragstart', function (event) {
-    // store the ID of the element, and collect it on the drop later on
-    event.dataTransfer.setData('Text', this.id);
-  });
 }
